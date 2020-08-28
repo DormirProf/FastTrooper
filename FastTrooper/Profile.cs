@@ -7,7 +7,7 @@ namespace FastTrooper
 {
     public partial class Profile : Form
     {
-        readonly static RegistryKey pr = Registry.CurrentUser.CreateSubKey(@"Software\Fast Trooper");
+        private readonly static RegistryKey pr = Registry.CurrentUser.CreateSubKey(@"Software\Fast Trooper");
 
         public Profile()
         {
@@ -15,7 +15,7 @@ namespace FastTrooper
             Event();
         }
 
-        void Event()
+        private void Event()
         {
             username.Text = pr.GetValue("Name").ToString();
             Bprem.Click += ((s, e) =>

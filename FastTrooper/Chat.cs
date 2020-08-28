@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Drawing;
 using System.Threading;
@@ -14,25 +13,26 @@ namespace FastTrooper
         public string nameuser = "User";
 
 
-        public string Names
+        public string Name
         {
             get { return name; }
             set { name = value; }
         }
 
-        public string NamesUsers
+        public string NameUser
         {
             get { return nameuser; }
             set { nameuser = value; }
         }
+
         public Chat()
         {
             InitializeComponent();
             Event();
-            Up();
+            UpdateChat();
         }
 
-        void Event()
+        private void Event()
         {
             Lsent.MouseMove += ((s, e) =>
             {
@@ -51,7 +51,7 @@ namespace FastTrooper
             });
         }
 
-        async void Up() //// Метод обновления чата
+        private async void UpdateChat() 
         {
             try
             {
@@ -76,7 +76,7 @@ namespace FastTrooper
             }
             await Task.Delay(2300);
             textchat.Text = "";
-            Up();
+            UpdateChat();
         }
 
         private void Lsent_Click(object sender, EventArgs e)

@@ -6,14 +6,13 @@ using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FastTrooper
 {
     public partial class GlavMenu : Form
     {
-        readonly static RegistryKey fasttrooper = Registry.CurrentUser.CreateSubKey(@"Software\Fast Trooper");
+        private readonly static RegistryKey fasttrooper = Registry.CurrentUser.CreateSubKey(@"Software\Fast Trooper");
 
         [DllImport("user32", CharSet = CharSet.Auto)]
         internal extern static bool PostMessage(IntPtr hWnd, uint Msg, uint WParam, uint LParam);
@@ -21,15 +20,15 @@ namespace FastTrooper
         [DllImport("user32", CharSet = CharSet.Auto)]
         internal extern static bool ReleaseCapture();
 
-        const uint WM_SYSCOMMAND = 0x0112;
-        const uint DOMOVE = 0xF012;
-        readonly Chat chat = new Chat();
-        readonly Profile prof = new Profile();
-        byte prov = 0;
+        private const uint WM_SYSCOMMAND = 0x0112;
+        private const uint DOMOVE = 0xF012;
+        private readonly Chat chat = new Chat();
+        private readonly Profile prof = new Profile();
+        private byte prov = 0;
 
         public GlavMenu()
         {
-            chat.NamesUsers = fasttrooper.GetValue("Name").ToString();
+            chat.NameUser = fasttrooper.GetValue("Name").ToString();
             InitializeComponent();
             Event();
             But();
@@ -112,7 +111,7 @@ namespace FastTrooper
                                 ColorMt(1);
                                 ColorMt(5);
                                 prov = 1;
-                                chat.Names = this.textlogchat.Text.ToLower();
+                                chat.Name = textlogchat.Text.ToLower();
                                 chat.MdiParent = this;
                                 chat.Refresh();
                                 chat.Show();
@@ -275,13 +274,5 @@ namespace FastTrooper
                 pictureBox1.Location = new Point(0, 0);
             }
         }
-        
-
-        public static string GetHwind() =>
-        (from x in new ManagementObjectSearcher("SELECT * FROM win32_processor").Get().OfType<ManagementObject>()
-         select x.GetPropertyValue("ProcessorId")).First().ToString();
-        public static string GetHddSerial() =>
-        (from x in new ManagementObjectSearcher("SELECT * FROM win32_PhysicalMemory").Get().OfType<ManagementObject>()
-         select x.GetPropertyValue("Serialnumber")).First().ToString();
     }
 }
