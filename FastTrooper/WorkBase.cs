@@ -10,90 +10,21 @@ namespace FastTrooper
 {
     class WorkBase
     {
-        readonly static RegistryKey fasttrooper = Registry.CurrentUser.CreateSubKey(@"Software\Fast Trooper");
-        static string id;
+        private readonly static RegistryKey fastTrooper = Registry.CurrentUser.CreateSubKey(@"Software\Fast Trooper");
+        private static string id;
+        private const string selectLoginInSQL = "SELECT `id`,`login`,`pass`,`Hwind`,`HddSerial`,`bans` FROM `user` WHERE login = login";
 
-        public static bool Login(string s1, string s2, bool s3)
+        public static bool Login(string name, string password, bool savedCheck)
         {
             try
             {
-                byte l = 0;
-                if (s1 == "TechAdmin" && s2 == "197HKZ358xh92eq39")
+                if (OfflineAuthorization(name, password, savedCheck))
                 {
-                    fasttrooper.SetValue("name", s1);
-                    if (s3 == true) 
-                        fasttrooper.SetValue("Pass", Cript.Ftencrypt(s2, "D<q3ydnasd6т86фк8ыв6кТ*:КЫ:ЫВКФ"));
-                    new GlavMenu().Show();
-                    new Adm().Show();
                     return true;
                 }
                 else
                 {
-                    using (MySqlConnection conn = new MySqlConnection(KeyCheck(1)))
-                    {
-                        try
-                        {
-                            conn.Open();
-                        }
-                        catch (Exception)
-                        {
-                            l = 1;
-                            MessageBox.Show("Ошибка подключения!");
-                            return false;
-                        }
-                        if (l != 1)
-                        {
-                            string sql = "SELECT `id`,`login`,`pass`,`Hwind`,`HddSerial`,`bans` FROM `user` WHERE login = login";
-                            using (MySqlCommand command = new MySqlCommand(sql, conn))
-                            using (MySqlDataReader reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    string log = reader[1].ToString();
-                                    string pas = reader[2].ToString();
-                                    string Hwind = reader[3].ToString();
-                                    string HddSerial = reader[4].ToString();
-                                    string bans = reader[5].ToString();
-                                    if (GetHwind() == Hwind && GetHddSerial() == HddSerial)
-                                        if (bans != "0")
-                                        {
-                                            MessageBox.Show("Вы забанены!");
-                                            return false;
-                                        }
-                                        else
-                                            if (s1.ToLower() == log && Cript.GetHash(s2 + s1) + Cript.GetHash(s1) == pas)
-                                            {
-                                            fasttrooper.SetValue("Name", s1);
-                                            if (s3 == true)
-                                            {
-                                                fasttrooper.SetValue("Pass", Cript.Ftencrypt(s2, "D<q3ydnasd6т86фк8ыв6кТ*:КЫ:ЫВКФ"));
-                                                fasttrooper.SetValue("RememberPassword", s3);
-                                            }
-                                            else
-                                            {
-                                                fasttrooper.SetValue("RememberPassword", s3);
-                                                fasttrooper.SetValue("Pass", "");
-                                            }
-
-                                            if (log == "admin")
-                                            {
-                                                new GlavMenu().Show();
-                                                new Adm().Show();
-                                                return true;
-
-                                            }
-                                            else
-                                                new GlavMenu().Show();                                              
-                                                id = reader[0].ToString();
-                                                return true;
-                                            }
-                                }
-                                reader.Close();
-                                MessageBox.Show("Не правильный логин или пароль! Или вы вошли с нового устройства!");
-                                return false;
-                            }
-                        }
-                    }
+                    Authorization(name, password, savedCheck);
                 }
                 return false;
             }
@@ -103,79 +34,51 @@ namespace FastTrooper
                 return false;
             }
         }
-        public static bool Register(string s1, string s2, string s3)
+
+        public static bool Register(string password, string repeatPassword, string name)
         {
-            byte nm = 0;
-            Regex regex = new Regex(" ");
-            MatchCollection match = regex.Matches(s1);
-            MatchCollection match1 = regex.Matches(s3);
-            if (s3 == "" || match1.Count != 0)
+            bool nameExists;
+            if (CheckForErrors(name, password, repeatPassword) == false)
             {
-                MessageBox.Show("Логин введен с ошибкой!");
                 return false;
             }
-            if (s1 == "" && s3 != "" || match.Count != 0)
-            {
-                MessageBox.Show("Пароль введен с ошибкой!");
-                return false;
-            }
-            if (s1 != s2)
-            {
-                MessageBox.Show("Пароли не совпадают!");
-                return false;
-            }     
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(KeyCheck(1)))
+                nameExists = CheckHwindAndNameExists(name);
+                if (nameExists == false)
                 {
-                    conn.Open();
-                    string sql = "SELECT `login`, `Hwind`, `HddSerial` FROM `user` WHERE 1";
-                    using (MySqlCommand command = new MySqlCommand(sql, conn))
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlConnection connection = new MySqlConnection(KeyCheck(1)))
                     {
-                        while (reader.Read())
+                        connection.Open();
+                        string query = "INSERT INTO `user`(`login`, `name`, `pass`, `Hwind`, `HddSerial`,`bans`) VALUES ('" +
+                            name.ToLower() + "','" +
+                            name + "','" +
+                            Cript.GetHash(password + name) + Cript.GetHash(name) + "','" +
+                            GetHwind() + "','" +
+                            GetHddSerial() + "','0')";
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
-                                if (s3.ToLower() == reader[0].ToString())
-                                    nm = 1;
-                                if (GetHwind() == reader[1].ToString() &&
-                                    GetHddSerial() == reader[2].ToString())
-                                    nm = 2;
+                            command.ExecuteNonQuery();
                         }
-                        reader.Close();
                     }
+                    fastTrooper.SetValue("CheckRegister", "True");
+                    MessageBox.Show("Регистрация прошла успешно!");
+                    new Login().Show();
+                    return true;
                 }
-                if (nm == 0) {
-                        using (MySqlConnection connection = new MySqlConnection(KeyCheck(1)))
-                        {
-                            connection.Open();
-                                    string query = "INSERT INTO `user`(`login`, `name`, `pass`, `Hwind`, `HddSerial`,`bans`) VALUES ('" + 
-                                        s3.ToLower() + "','" + 
-                                        s3 + "','" +
-                                        Cript.GetHash(s1 + s3) + Cript.GetHash(s3)+ "','"+
-                                        GetHwind() + "','"+
-                                        GetHddSerial() + "','0')";
-                                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                                    {
-                                        command.ExecuteNonQuery();
-                                    }
-                        }
-                        fasttrooper.SetValue("CheckRegister", "True");
-                        MessageBox.Show("Регистрация прошла успешно!");
-                        new Login().Show();
-                        return true;
-                }
-                if (nm == 1) {
+                if (nameExists == true)
+                {
                     MessageBox.Show("Такое имя пользователя уже существует!");
-                    return false; 
+                    return false;
                 }
                 else
                 {
-                    fasttrooper.SetValue("CheckRegister", "True");
+                    fastTrooper.SetValue("CheckRegister", "True");
                     MessageBox.Show("Вы уже регистрировались!");
                     new Login().Show();
                     return true;
                 }
-                }
+            }
             catch
             {
                 MessageBox.Show("Ошибка соединения!");
@@ -183,6 +86,126 @@ namespace FastTrooper
             }
         }
 
+        private static bool OfflineAuthorization(string name, string password, bool savedCheck)
+        {
+            if (name == "TechAdmin" && password == "197HKZ358xh92eq39")
+            {
+                fastTrooper.SetValue("name", name);
+                if (savedCheck == true)
+                    fastTrooper.SetValue("Pass", Cript.Ftencrypt(password, "D<q3ydnasd6т86фк8ыв6кТ*:КЫ:ЫВКФ"));
+                new GlavMenu().Show();
+                new Adm().Show();
+                return true;
+            }
+            return false;
+        }
+
+        private static bool Authorization(string name, string password, bool savedCheck)
+        {
+            using (MySqlConnection conn = new MySqlConnection(KeyCheck(1)))
+            {
+                try
+                {
+                    conn.Open();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Ошибка подключения!");
+                    return false;
+                }
+                using (MySqlCommand command = new MySqlCommand(selectLoginInSQL, conn))
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string log = reader[1].ToString();
+                        string pas = reader[2].ToString();
+                        string Hwind = reader[3].ToString();
+                        string HddSerial = reader[4].ToString();
+                        string bans = reader[5].ToString();
+                        if (GetHwind() == Hwind && GetHddSerial() == HddSerial)
+                            if (bans != "0")
+                            {
+                                MessageBox.Show("Вы забанены!");
+                                return false;
+                            }
+                            else if ((name.ToLower() == log) && (Cript.GetHash(password + name) + Cript.GetHash(name) == pas))
+                            {
+                                fastTrooper.SetValue("Name", name);
+                                if (savedCheck == true)
+                                {
+                                    fastTrooper.SetValue("Pass", Cript.Ftencrypt(password, "D<q3ydnasd6т86фк8ыв6кТ*:КЫ:ЫВКФ"));
+                                    fastTrooper.SetValue("RememberPassword", savedCheck);
+                                }
+                                else
+                                {
+                                    fastTrooper.SetValue("RememberPassword", savedCheck);
+                                    fastTrooper.SetValue("Pass", "");
+                                }
+                                if (log == "admin")
+                                {
+                                    new GlavMenu().Show();
+                                    new Adm().Show();
+                                    return true;
+
+                                }
+                                else
+                                    new GlavMenu().Show();
+                                id = reader[0].ToString();
+                                return true;
+                            }
+                    }
+                    reader.Close();
+                    MessageBox.Show("Не правильный логин или пароль! Или вы вошли с нового устройства!");
+                    return false;
+                }
+            }
+        }
+
+
+        private static bool CheckForErrors(string name , string password, string repeatPassword)
+        {
+            Regex regex = new Regex(" ");
+            MatchCollection match = regex.Matches(password);
+            MatchCollection match1 = regex.Matches(name);
+            if (name == "" || match1.Count != 0)
+            {
+                MessageBox.Show("Логин введен с ошибкой!");
+                return false;
+            } else if (password == "" && name != "" || match.Count != 0)
+            {
+                MessageBox.Show("Пароль введен с ошибкой!");
+                return false;
+            } else if (password != repeatPassword)
+            {
+                MessageBox.Show("Пароли не совпадают!");
+                return false;
+            }
+            return true;
+        }
+
+        private static bool CheckHwindAndNameExists(string name)
+        {
+            using (MySqlConnection conn = new MySqlConnection(KeyCheck(1)))
+            {
+                conn.Open();
+                string sql = "SELECT `login`, `Hwind`, `HddSerial` FROM `user` WHERE 1";
+                using (MySqlCommand command = new MySqlCommand(sql, conn))
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (name.ToLower() == reader[0].ToString())
+                            return true;
+                        if (GetHwind() == reader[1].ToString() &&
+                            GetHddSerial() == reader[2].ToString())
+                            return false;
+                    }
+                    reader.Close();
+                }
+            }
+            return false;
+        }
 
         public static byte CheckChat(string Name, string Pass)
         {

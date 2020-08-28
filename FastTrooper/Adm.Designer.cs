@@ -143,8 +143,8 @@
             this.menuStrip1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.оПрограммеToolStripMenuItem,
-            this.действияToolStripMenuItem});
+            this.действияToolStripMenuItem,
+            this.оПрограммеToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(800, 28);
@@ -162,7 +162,7 @@
             // показатьАвтораToolStripMenuItem
             // 
             this.показатьАвтораToolStripMenuItem.Name = "показатьАвтораToolStripMenuItem";
-            this.показатьАвтораToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
+            this.показатьАвтораToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.показатьАвтораToolStripMenuItem.Text = "Показать автора";
             this.показатьАвтораToolStripMenuItem.Click += new System.EventHandler(this.показатьАвтораToolStripMenuItem_Click);
             // 
