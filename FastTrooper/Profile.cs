@@ -24,12 +24,12 @@ namespace FastTrooper
                     Invoke((Action)(() =>
                     {
                         if (username.Text != pr.GetValue("Name").ToString())
-                            if (WorkBase.AcceptProfileName(username.Text, pass.Text) == true)
+                            if (WorkBase.ChangeUsername(username.Text, pass.Text) == true)
                                 MessageBox.Show("Изменения успешно внесены");
                             else
                                 MessageBox.Show("Пользователь с таким именем уже существует!");
                         else
-                            if (WorkBase.AcceptProfilePass(username.Text, pass.Text) == true)
+                            if (WorkBase.ChangePassword(username.Text, pass.Text) == true)
                             MessageBox.Show("Изменения успешно внесены");
                     }));
                 }).Start();

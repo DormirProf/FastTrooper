@@ -55,7 +55,7 @@ namespace FastTrooper
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(WorkBase.KeyCheck(2)))
+                using (MySqlConnection conn = new MySqlConnection(WorkBase.CheckKey(2)))
                 {
                     conn.Open();
                     string sql = "SELECT `name`,`mess` FROM `"+ name + "` WHERE mess = mess";
@@ -86,7 +86,7 @@ namespace FastTrooper
                 {
                     try
                     {
-                        using (MySqlConnection connection = new MySqlConnection(WorkBase.KeyCheck(2)))
+                        using (MySqlConnection connection = new MySqlConnection(WorkBase.CheckKey(2)))
                         {
                             connection.Open();
                             string query1 = "INSERT INTO `"+ name + "` (name,mess) VALUES ('" + nameuser + ": " + "','" + Cript.Ftencrypt(textinchat.Text, "N_As7dda8s7dgqasD@d7a6fsdh9q") + "')";

@@ -140,6 +140,7 @@
     <Compile Include="GlavMenu.Designer.cs">
       <DependentUpon>GlavMenu.cs</DependentUpon>
     </Compile>
+    <Compile Include="HwindAndHddSerial.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -26,7 +26,7 @@ namespace FastTrooper
             Bban.Click += ((s, e) =>
             {
                 try { 
-                using (MySqlConnection connection = new MySqlConnection(WorkBase.KeyCheck(1)))
+                using (MySqlConnection connection = new MySqlConnection(WorkBase.CheckKey(1)))
                 {
                     connection.Open();
                     {
@@ -48,7 +48,7 @@ namespace FastTrooper
             {
                 try
                 {
-                    using (MySqlConnection connection = new MySqlConnection(WorkBase.KeyCheck(1)))
+                    using (MySqlConnection connection = new MySqlConnection(WorkBase.CheckKey(1)))
                     {
                         connection.Open();
                         {
@@ -71,7 +71,7 @@ namespace FastTrooper
        
         void Check()
         {
-            using (MySqlConnection conn = new MySqlConnection(WorkBase.KeyCheck(1)))
+            using (MySqlConnection conn = new MySqlConnection(WorkBase.CheckKey(1)))
             {
                 conn.Open();
                 string sql = "SELECT `name` FROM `user` WHERE 1";
@@ -92,7 +92,7 @@ namespace FastTrooper
                 try
                 {
                     byte g = 0;
-                    using (MySqlConnection conn = new MySqlConnection(WorkBase.KeyCheck(1)))
+                    using (MySqlConnection conn = new MySqlConnection(WorkBase.CheckKey(1)))
                     {
                         conn.Open();
                         string sql = "SELECT `login` FROM `user` WHERE 1";
@@ -114,7 +114,7 @@ namespace FastTrooper
                     {
                         try
                         {
-                            using (MySqlConnection connection = new MySqlConnection(WorkBase.KeyCheck(1)))
+                            using (MySqlConnection connection = new MySqlConnection(WorkBase.CheckKey(1)))
                             {
                                 connection.Open();
                                 {
@@ -142,7 +142,7 @@ namespace FastTrooper
             {
                try
                {
-                   using (MySqlConnection connection = new MySqlConnection(WorkBase.KeyCheck(1)))
+                   using (MySqlConnection connection = new MySqlConnection(WorkBase.CheckKey(1)))
                    {
                        connection.Open();
                        {
@@ -164,27 +164,31 @@ namespace FastTrooper
             {
                     try
                     {
-                        byte g = 0;
-                        using (MySqlConnection conn = new MySqlConnection(WorkBase.KeyCheck(1)))
+                        bool nameExists = false;
+                        using (MySqlConnection conn = new MySqlConnection(WorkBase.CheckKey(1)))
                         {
                             conn.Open();
                             string sql = "SELECT `login` FROM `user` WHERE 1";
                             using (MySqlCommand command = new MySqlCommand(sql, conn))
                             using (MySqlDataReader reader = command.ExecuteReader())
                             {
-                                while (reader.Read())
-                                    if (username.Text.ToLower() == reader[0].ToString())
-                                        g = 1;
-                                if (g == 1)
+                            while (reader.Read())
+                            {
+                                if (username.Text.ToLower() == reader[0].ToString())
+                                {
+                                    nameExists = true;
+                                }
+                            }
+                            if (nameExists == true)
                                     MessageBox.Show("Такое имя пользователя уже существует!");
                                 reader.Close();
                             }
                         }
-                        if (g == 0)
+                        if (nameExists == false)
                         {
                             try
                             {
-                                using (MySqlConnection connection = new MySqlConnection(WorkBase.KeyCheck(1)))
+                                using (MySqlConnection connection = new MySqlConnection(WorkBase.CheckKey(1)))
                                 {
                                     connection.Open();
                                     {

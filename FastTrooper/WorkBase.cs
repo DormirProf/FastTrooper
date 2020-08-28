@@ -1,8 +1,6 @@
 ﻿using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
-using System.Linq;
-using System.Management;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -47,15 +45,15 @@ namespace FastTrooper
                 nameExists = CheckHwindAndNameExists(name);
                 if (nameExists == false)
                 {
-                    using (MySqlConnection connection = new MySqlConnection(KeyCheck(1)))
+                    using (MySqlConnection connection = new MySqlConnection(CheckKey(1)))
                     {
                         connection.Open();
                         string query = "INSERT INTO `user`(`login`, `name`, `pass`, `Hwind`, `HddSerial`,`bans`) VALUES ('" +
                             name.ToLower() + "','" +
                             name + "','" +
                             Cript.GetHash(password + name) + Cript.GetHash(name) + "','" +
-                            GetHwind() + "','" +
-                            GetHddSerial() + "','0')";
+                            HwindAndHddSerial.GetHwind() + "','" +
+                            HwindAndHddSerial.GetHddSerial() + "','0')";
                         using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
                             command.ExecuteNonQuery();
@@ -149,6 +147,75 @@ namespace FastTrooper
             }
         }
 
+        public static bool ChangeUsername(string name, string pass)
+        {
+            using (MySqlConnection conn = new MySqlConnection(CheckKey(1)))
+            {
+                conn.Open();
+                string sql = "SELECT `login` FROM `user` WHERE 1";
+                using (MySqlCommand command = new MySqlCommand(sql, conn))
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (name.ToLower() == reader[0].ToString())
+                            return false;
+                    }
+                    reader.Close();
+                }
+            }
+            using (MySqlConnection connection = new MySqlConnection(CheckKey(1)))
+            {
+                connection.Open();
+                {
+                    string query = "UPDATE `user` SET `login` = '" + name.ToLower() + "' , `name` = '" + name + "' , `pass` = '" + Cript.GetHash(pass + name) + Cript.GetHash(name)
+                        + "' WHERE `id` = " + id + "";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        public static bool ChangePassword(string name, string pass)
+        {
+            using (MySqlConnection connection = new MySqlConnection(CheckKey(1)))
+            {
+                connection.Open();
+                {
+                    string query = "UPDATE `user` SET `pass` = '" + Cript.GetHash(pass + name) + Cript.GetHash(name) + "' WHERE `id` = " + id + "";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        public static string CheckKey(int number)
+        {
+            string SQLAuthorization = "server=localhost;user=root;database=podkl;password=root;";
+
+            using (MySqlConnection conn = new MySqlConnection(SQLAuthorization))
+            {
+                conn.Open();
+                string sql = "SELECT `key` FROM `pd` WHERE `id` = " + number + "";
+                using (MySqlCommand command = new MySqlCommand(sql, conn))
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        return Cript.Ftdecrypt(reader[0].ToString(), "NHd923asdm-9q83y3ydq3dwf4");
+                    }
+                    reader.Close();
+                }
+            }
+            return "";
+        }
+
         private static bool OfflineAuthorization(string name, string password, bool savedCheck)
         {
             if (name == "TechAdmin" && password == "197HKZ358xh92eq39")
@@ -165,7 +232,7 @@ namespace FastTrooper
 
         private static bool Authorization(string name, string password, bool savedCheck)
         {
-            using (MySqlConnection conn = new MySqlConnection(KeyCheck(1)))
+            using (MySqlConnection conn = new MySqlConnection(CheckKey(1)))
             {
                 try
                 {
@@ -186,7 +253,7 @@ namespace FastTrooper
                         string Hwind = reader[3].ToString();
                         string HddSerial = reader[4].ToString();
                         string bans = reader[5].ToString();
-                        if (GetHwind() == Hwind && GetHddSerial() == HddSerial)
+                        if (HwindAndHddSerial.GetHwind() == Hwind && HwindAndHddSerial.GetHddSerial() == HddSerial)
                             if (bans != "0")
                             {
                                 MessageBox.Show("Вы забанены!");
@@ -248,7 +315,7 @@ namespace FastTrooper
 
         private static bool CheckHwindAndNameExists(string name)
         {
-            using (MySqlConnection conn = new MySqlConnection(KeyCheck(1)))
+            using (MySqlConnection conn = new MySqlConnection(CheckKey(1)))
             {
                 conn.Open();
                 string sql = "SELECT `login`, `Hwind`, `HddSerial` FROM `user` WHERE 1";
@@ -259,8 +326,8 @@ namespace FastTrooper
                     {
                         if (name.ToLower() == reader[0].ToString())
                             return true;
-                        if (GetHwind() == reader[1].ToString() &&
-                            GetHddSerial() == reader[2].ToString())
+                        if (HwindAndHddSerial.GetHwind() == reader[1].ToString() &&
+                            HwindAndHddSerial.GetHddSerial() == reader[2].ToString())
                             return false;
                     }
                     reader.Close();
@@ -268,83 +335,5 @@ namespace FastTrooper
             }
             return false;
         }
-
-        //смена имени и пароля
-        public static bool AcceptProfileName(string name, string pass)
-        {
-            using (MySqlConnection conn = new MySqlConnection(KeyCheck(1)))
-            {
-                conn.Open();
-                string sql = "SELECT `login` FROM `user` WHERE 1";
-                using (MySqlCommand command = new MySqlCommand(sql, conn))
-                using (MySqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                            if (name.ToLower() == reader[0].ToString())
-                                return false;
-                    }
-                    reader.Close();
-                }
-            }
-            using (MySqlConnection connection = new MySqlConnection(KeyCheck(1)))
-            {
-                connection.Open();
-                {
-                    string query = "UPDATE `user` SET `login` = '" + name.ToLower() + "' , `name` = '" + name + "' , `pass` = '" + Cript.GetHash(pass + name) + Cript.GetHash(name)
-                        + "' WHERE `id` = " + id + "";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        command.ExecuteNonQuery();
-                        return true;
-                    }
-                }
-            }
-        }
-        //изменен только пароль
-        public static bool AcceptProfilePass(string name, string pass)
-        {
-            using (MySqlConnection connection = new MySqlConnection(KeyCheck(1)))
-            {
-                connection.Open();
-                {
-                    string query = "UPDATE `user` SET `pass` = '" + Cript.GetHash(pass + name) + Cript.GetHash(name) + "' WHERE `id` = " + id + "";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        command.ExecuteNonQuery();
-                        return true;
-                    }
-                }
-            }
-        }
-        //защита подключения
-        protected internal static string KeyCheck(int b)
-        {
-            string ptrstr = "server=localhost;user=root;database=podkl;password=root;";
-
-            using (MySqlConnection conn = new MySqlConnection(ptrstr))
-            {
-                conn.Open();
-                string sql = "SELECT `key` FROM `pd` WHERE `id` = "+ b +"";
-                using (MySqlCommand command = new MySqlCommand(sql, conn))
-                using (MySqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        return Cript.Ftdecrypt(reader[0].ToString(), "NHd923asdm-9q83y3ydq3dwf4");
-                    }
-                    reader.Close();
-                }
-            }
-            return "";
-        }
-
-        public static string GetHwind() =>
-        (from x in new ManagementObjectSearcher("SELECT * FROM win32_processor").Get().OfType<ManagementObject>()
-         select x.GetPropertyValue("ProcessorId")).First().ToString();
-        public static string GetHddSerial() =>
-        (from x in new ManagementObjectSearcher("SELECT * FROM win32_PhysicalMemory").Get().OfType<ManagementObject>()
-         select x.GetPropertyValue("Serialnumber")).First().ToString();
-
     }
 }
