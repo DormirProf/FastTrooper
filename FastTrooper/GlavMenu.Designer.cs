@@ -40,12 +40,12 @@
             this.mov = new System.Windows.Forms.PictureBox();
             this.border3 = new System.Windows.Forms.PictureBox();
             this.panelchat = new System.Windows.Forms.Panel();
+            this.Pchatexit = new System.Windows.Forms.PictureBox();
             this.Lcreate = new System.Windows.Forms.Label();
             this.Laut = new System.Windows.Forms.Label();
             this.textpasschat = new System.Windows.Forms.TextBox();
             this.textlogchat = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.Pchatexit = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.border1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.border2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.turn)).BeginInit();
@@ -53,8 +53,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.mov)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.border3)).BeginInit();
             this.panelchat.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pchatexit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // Lchat
@@ -178,6 +178,17 @@
             this.panelchat.TabIndex = 23;
             this.panelchat.Visible = false;
             // 
+            // Pchatexit
+            // 
+            this.Pchatexit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.Pchatexit.BackgroundImage = global::FastTrooper.Properties.Resources.icons8_закрыть_окно_100;
+            this.Pchatexit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.Pchatexit.Location = new System.Drawing.Point(319, 3);
+            this.Pchatexit.Name = "Pchatexit";
+            this.Pchatexit.Size = new System.Drawing.Size(31, 24);
+            this.Pchatexit.TabIndex = 27;
+            this.Pchatexit.TabStop = false;
+            // 
             // Lcreate
             // 
             this.Lcreate.AutoSize = true;
@@ -229,17 +240,6 @@
             this.pictureBox1.TabIndex = 10;
             this.pictureBox1.TabStop = false;
             // 
-            // Pchatexit
-            // 
-            this.Pchatexit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.Pchatexit.BackgroundImage = global::FastTrooper.Properties.Resources.icons8_закрыть_окно_100;
-            this.Pchatexit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Pchatexit.Location = new System.Drawing.Point(319, 3);
-            this.Pchatexit.Name = "Pchatexit";
-            this.Pchatexit.Size = new System.Drawing.Size(31, 24);
-            this.Pchatexit.TabIndex = 27;
-            this.Pchatexit.TabStop = false;
-            // 
             // GlavMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -274,8 +274,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.border3)).EndInit();
             this.panelchat.ResumeLayout(false);
             this.panelchat.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Pchatexit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
