@@ -86,6 +86,69 @@ namespace FastTrooper
             }
         }
 
+        public static int CheckChatAuthorization(string Name, string Pass)
+        {
+            using (MySqlConnection conn = new MySqlConnection("server=localhost;user=root;database=chat;password=root;"))
+            {
+                conn.Open();
+                string sql = "SELECT `Name`, `Pass` FROM `list` WHERE 1";
+                using (MySqlCommand command = new MySqlCommand(sql, conn))
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (Name == reader[0].ToString())
+                        {
+                            if (Pass == reader[1].ToString())
+                            {
+                                return 1;
+                            }
+                            else
+                            {
+                                return 2;
+                            }
+                        }
+                    }
+                    reader.Close();
+                }
+                return 3;
+            }
+        }
+
+        public static bool RegisterNewChat(string Name, string Pass)
+        {
+            using (MySqlConnection conn = new MySqlConnection("server=localhost;user=root;database=chat;password=root;"))
+            {
+                conn.Open();
+                {
+                    string query = "INSERT INTO `list`(`Name`, `Pass`) VALUES ('" +
+                                        Name + "','" +
+                                        Pass + "')";
+                    using (MySqlCommand command = new MySqlCommand(query, conn))
+                    {
+                        command.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        public static bool RegisterNewChat2(string Name)
+        {
+            using (MySqlConnection conn = new MySqlConnection("server=localhost;user=root;database=chat;password=root;"))
+            {
+                conn.Open();
+                {
+                    string query = "CREATE TABLE `" + Name + "` (`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,`name` text NOT NULL,`mess` text NOT NULL)";
+                    using (MySqlCommand command = new MySqlCommand(query, conn))
+                    {
+                        command.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+        }
+
         private static bool OfflineAuthorization(string name, string password, bool savedCheck)
         {
             if (name == "TechAdmin" && password == "197HKZ358xh92eq39")
@@ -162,7 +225,6 @@ namespace FastTrooper
             }
         }
 
-
         private static bool CheckForErrors(string name , string password, string repeatPassword)
         {
             Regex regex = new Regex(" ");
@@ -207,64 +269,6 @@ namespace FastTrooper
             return false;
         }
 
-        public static byte CheckChat(string Name, string Pass)
-        {
-            using (MySqlConnection conn = new MySqlConnection("server=localhost;user=root;database=chat;password=root;"))
-            {
-                conn.Open();
-                string sql = "SELECT `Name`, `Pass` FROM `list` WHERE 1";
-                using (MySqlCommand command = new MySqlCommand(sql, conn))
-                using (MySqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        if (Name == reader[0].ToString())
-                        {
-                            if (Pass == reader[1].ToString())
-                                return 1;
-                            else
-                            {
-                                return 2;
-                            }
-                        }
-                    }
-                    reader.Close();
-                }
-                return 3;
-            }
-        }
-        public static bool RegChat(string Name, string Pass)
-        {
-            using (MySqlConnection conn = new MySqlConnection("server=localhost;user=root;database=chat;password=root;"))
-            {
-                conn.Open();
-                {
-                    string query = "INSERT INTO `list`(`Name`, `Pass`) VALUES ('" +
-                                        Name + "','" +
-                                        Pass + "')";
-                    using (MySqlCommand command = new MySqlCommand(query, conn))
-                    {
-                        command.ExecuteNonQuery();
-                        return true;
-                    }
-                }
-            }
-        }
-        public static bool RegChat2(string Name)
-        {
-            using (MySqlConnection conn = new MySqlConnection("server=localhost;user=root;database=chat;password=root;"))
-            {
-                conn.Open();
-                {
-                    string query = "CREATE TABLE `"+Name+"` (`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,`name` text NOT NULL,`mess` text NOT NULL)";
-                    using (MySqlCommand command = new MySqlCommand(query, conn))
-                    {
-                        command.ExecuteNonQuery();
-                        return true;
-                    }
-                }
-            }
-        }
         //смена имени и пароля
         public static bool AcceptProfileName(string name, string pass)
         {

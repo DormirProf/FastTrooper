@@ -105,22 +105,26 @@ namespace FastTrooper
                 {
                     Invoke((Action)(() =>
                     {
-                        if (WorkBase.CheckChat(textlogchat.Text.ToLower(), textpasschat.Text) == 1)
+                        switch(WorkBase.CheckChatAuthorization(textlogchat.Text.ToLower(), textpasschat.Text))
                         {
-                            panelchat.Visible = false;
-                            ColorMt(1);
-                            ColorMt(5);
-                            prov = 1;
-                            chat.Names = this.textlogchat.Text.ToLower();
-                            chat.MdiParent = this;
-                            chat.Refresh();
-                            chat.Show();
-                            prof.Hide();
+                            case 1:
+                                panelchat.Visible = false;
+                                ColorMt(1);
+                                ColorMt(5);
+                                prov = 1;
+                                chat.Names = this.textlogchat.Text.ToLower();
+                                chat.MdiParent = this;
+                                chat.Refresh();
+                                chat.Show();
+                                prof.Hide();
+                                break;
+                            case 2:
+                                MessageBox.Show("Вы ввели неверный пароль!");
+                                break;
+                            case 3:
+                                MessageBox.Show("Вы ввели неверный пароль!");
+                                break;
                         }
-                        if (WorkBase.CheckChat(textlogchat.Text.ToLower(), textpasschat.Text) == 2)
-                            MessageBox.Show("Вы ввели неверный пароль!");
-                        if (WorkBase.CheckChat(textlogchat.Text.ToLower(), textpasschat.Text) == 3)
-                            MessageBox.Show("Такого чата не существует!");
                         
                     }));
                 }).Start();
@@ -131,10 +135,10 @@ namespace FastTrooper
                 {
                     Invoke((Action)(() =>
                     {
-                        if (WorkBase.RegChat(textlogchat.Text.ToLower(), textpasschat.Text) == true)
+                        if (WorkBase.RegisterNewChat(textlogchat.Text.ToLower(), textpasschat.Text) == true)
                         {
                             MessageBox.Show("Вы успешно создали чат.");
-                            WorkBase.RegChat2(textlogchat.Text.ToLower());
+                            WorkBase.RegisterNewChat2(textlogchat.Text.ToLower());
                         }
                     }));
                 }).Start();
